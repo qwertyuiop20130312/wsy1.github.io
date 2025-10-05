@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>经典游戏合集</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            padding: 30px 0;
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .games-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .game-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .game-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .game-title {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .game-icon {
+            font-size: 1.5rem;
+        }
+        
+        .game-description {
+            margin-bottom: 20px;
+            line-height: 1.6;
+            opacity: 0.9;
+        }
+        
+        .game-area {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 20px;
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .game-controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        button {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+        
+        .game-board {
+            display: grid;
+            grid-template-columns: repeat(8, 30px);
+            grid-template-rows: repeat(8, 30px);
+            gap: 2px;
+            margin: 20px 0;
+        }
+        
+        .cell {
+            width: 30px;
+            height: 30px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .cell:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .maze-cell {
+            width: 25px;
+            height: 25px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .maze-cell.wall {
+            background: #333;
+        }
+        
+        .maze-cell.path {
+            background: rgba(255, 255, 255, 0.8);
+        }
+        
+        .maze-cell.start {
+            background: #4CAF50;
+        }
+        
+        .maze-cell.end {
+            background: #F44336;
+        }
+        
+        .gobang-board {
+            display: grid;
+            grid-template-columns: repeat(15, 25px);
+            grid-template-rows: repeat(15, 25px);
+            gap: 0;
+            background: #DEB887;
+            padding: 10px;
+            border-radius: 5px;
+            position: relative;
+        }
+        
+        .gobang-cell {
+            width: 25px;
+            height: 25px;
+            border: 1px solid #8B4513;
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .gobang-cell::before, .gobang-cell::after {
+            content: '';
+            position: absolute;
+            background: #8B4513;
+        }
+        
+        .gobang-cell::before {
+            width: 100%;
+            height: 1px;
+            top: 50%;
+            left: 0;
+        }
+        
+        .gobang-cell::after {
+            width: 1px;
+            height: 100%;
+            top: 0;
+            left: 50%;
+        }
+        
+        .stone {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1;
+        }
+        
+        .stone.black {
+            background: #000;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+        }
+        
+        .stone.white {
+            background: #fff;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            margin-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        @media (max-width: 768px) {
+            .games-container {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .game-board {
+                grid-template-columns: repeat(8, 25px);
+                grid-template-rows: repeat(8, 25px);
+            }
+            
+            .cell {
+                width: 25px;
+                height: 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>经典游戏合集</h1>
+            <p class="subtitle">扫雷 · 迷宫 · 五子棋 - 重温经典，挑战自我</p>
+        </header>
+        
+        <div class="games-container">
+            <!-- 扫雷游戏 -->
+            <div class="game-card">
+                <h2 class="game-title">
+                    <span class="game-icon">💣</span>
+                    扫雷
+                </h2>
+                <p class="game-description">
+                    经典扫雷游戏，点击方格揭开它们，但要注意避开地雷！数字表示周围地雷的数量。
+                </p>
+                <div class="game-area">
+                    <div class="game-board" id="minesweeper-board">
+                        <!-- 扫雷格子将通过JavaScript生成 -->
+                    </div>
+                    <div class="game-controls">
+                        <button id="minesweeper-restart">重新开始</button>
+                        <button id="minesweeper-hint">提示</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 迷宫游戏 -->
+            <div class="game-card">
+                <h2 class="game-title">
+                    <span class="game-icon">🧩</span>
+                    迷宫
+                </h2>
+                <p class="game-description">
+                    找到从起点到终点的路径。使用方向键或按钮移动，避开墙壁。
+                </p>
+                <div class="game-area">
+                    <div class="game-board" id="maze-board">
+                        <!-- 迷宫将通过JavaScript生成 -->
+                    </div>
+                    <div class="game-controls">
+                        <button id="maze-up">上</button>
+                        <button id="maze-left">左</button>
+                        <button id="maze-down">下</button>
+                        <button id="maze-right">右</button>
+                        <button id="maze-reset">重置</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 五子棋游戏 -->
+            <div class="game-card">
+                <h2 class="game-title">
+                    <span class="game-icon">🎯</span>
+                    五子棋
+                </h2>
+                <p class="game-description">
+                    黑白双方轮流落子，先在横、竖或斜方向连成五子者获胜。
+                </p>
+                <div class="game-area">
+                    <div class="gobang-board" id="gobang-board">
+                        <!-- 五子棋棋盘将通过JavaScript生成 -->
+                    </div>
+                    <div class="game-controls">
+                        <button id="gobang-restart">重新开始</button>
+                        <button id="gobang-undo">悔棋</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>© 2023 经典游戏合集 | 设计用于演示目的</p>
+        </footer>
+    </div>
+
+    <script>
+        // 扫雷游戏逻辑
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化扫雷游戏
+            const minesweeperBoard = document.getElementById('minesweeper-board');
+            const minesweeperRestart = document.getElementById('minesweeper-restart');
+            
+            function initMinesweeper() {
+                minesweeperBoard.innerHTML = '';
+                const size = 8;
+                const mineCount = 10;
+                
+                // 创建游戏板
+                for (let i = 0; i < size; i++) {
+                    for (let j = 0; j < size; j++) {
+                        const cell = document.createElement('div');
+                        cell.className = 'cell';
+                        cell.dataset.row = i;
+                        cell.dataset.col = j;
+                        cell.textContent = '';
+                        
+                        cell.addEventListener('click', function() {
+                            if (!this.classList.contains('revealed')) {
+                                this.classList.add('revealed');
+                                this.style.background = 'rgba(255, 255, 255, 0.1)';
+                                // 模拟随机数字
+                                const randomNum = Math.floor(Math.random() * 5);
+                                if (randomNum > 0) {
+                                    this.textContent = randomNum;
+                                }
+                            }
+                        });
+                        
+                        cell.addEventListener('contextmenu', function(e) {
+                            e.preventDefault();
+                            this.classList.toggle('flagged');
+                            if (this.classList.contains('flagged')) {
+                                this.textContent = '🚩';
+                            } else {
+                                this.textContent = '';
+                            }
+                        });
+                        
+                        minesweeperBoard.appendChild(cell);
+                    }
+                }
+            }
+            
+            minesweeperRestart.addEventListener('click', initMinesweeper);
+            initMinesweeper();
+            
+            // 迷宫游戏逻辑
+            const mazeBoard = document.getElementById('maze-board');
+            const mazeUp = document.getElementById('maze-up');
+            const mazeLeft = document.getElementById('maze-left');
+            const mazeDown = document.getElementById('maze-down');
+            const mazeRight = document.getElementById('maze-right');
+            const mazeReset = document.getElementById('maze-reset');
+            
+            let playerPosition = { row: 1, col: 1 };
+            
+            function initMaze() {
+                mazeBoard.innerHTML = '';
+                const size = 8;
+                
+                // 创建迷宫
+                for (let i = 0; i < size; i++) {
+                    for (let j = 0; j < size; j++) {
+                        const cell = document.createElement('div');
+                        cell.className = 'maze-cell';
+                        
+                        // 创建简单的迷宫布局
+                        if (i === 0 || i === size-1 || j === 0 || j === size-1 || 
+                            (i === 2 && j > 1 && j < 5) || 
+                            (i === 4 && j > 2 && j < 7) ||
+                            (j === 3 && i > 1 && i < 6)) {
+                            cell.classList.add('wall');
+                        } else if (i === 1 && j === 1) {
+                            cell.classList.add('start');
+                        } else if (i === size-2 && j === size-2) {
+                            cell.classList.add('end');
+                        } else {
+                            cell.classList.add('path');
+                        }
+                        
+                        mazeBoard.appendChild(cell);
+                    }
+                }
+                
+                // 放置玩家
+                playerPosition = { row: 1, col: 1 };
+                updatePlayerPosition();
+            }
+            
+            function updatePlayerPosition() {
+                const cells = mazeBoard.querySelectorAll('.maze-cell');
+                cells.forEach(cell => cell.classList.remove('player'));
+                
+                const index = playerPosition.row * 8 + playerPosition.col;
+                if (cells[index]) {
+                    cells[index].classList.add('player');
+                    cells[index].textContent = '😊';
+                }
+            }
+            
+            function movePlayer(direction) {
+                let newRow = playerPosition.row;
+                let newCol = playerPosition.col;
+                
+                switch(direction) {
+                    case 'up': newRow--; break;
+                    case 'down': newRow++; break;
+                    case 'left': newCol--; break;
+                    case 'right': newCol++; break;
+                }
+                
+                // 检查是否可移动
+                const cells = mazeBoard.querySelectorAll('.maze-cell');
+                const newIndex = newRow * 8 + newCol;
+                
+                if (newRow >= 0 && newRow < 8 && newCol >= 0 && newCol < 8 && 
+                    !cells[newIndex].classList.contains('wall')) {
+                    playerPosition.row = newRow;
+                    playerPosition.col = newCol;
+                    updatePlayerPosition();
+                    
+                    // 检查是否到达终点
+                    if (cells[newIndex].classList.contains('end')) {
+                        setTimeout(() => {
+                            alert('恭喜！你成功走出了迷宫！');
+                        }, 100);
+                    }
+                }
+            }
+            
+            mazeUp.addEventListener('click', () => movePlayer('up'));
+            mazeLeft.addEventListener('click', () => movePlayer('left'));
+            mazeDown.addEventListener('click', () => movePlayer('down'));
+            mazeRight.addEventListener('click', () => movePlayer('right'));
+            mazeReset.addEventListener('click', initMaze);
+            
+            // 键盘控制
+            document.addEventListener('keydown', function(e) {
+                switch(e.key) {
+                    case 'ArrowUp': movePlayer('up'); break;
+                    case 'ArrowDown': movePlayer('down'); break;
+                    case 'ArrowLeft': movePlayer('left'); break;
+                    case 'ArrowRight': movePlayer('right'); break;
+                }
+            });
+            
+            initMaze();
+            
+            // 五子棋游戏逻辑
+            const gobangBoard = document.getElementById('gobang-board');
+            const gobangRestart = document.getElementById('gobang-restart');
+            const gobangUndo = document.getElementById('gobang-undo');
+            
+            let currentPlayer = 'black';
+            let gameHistory = [];
+            
+            function initGobang() {
+                gobangBoard.innerHTML = '';
+                gameHistory = [];
+                currentPlayer = 'black';
+                
+                // 创建棋盘
+                for (let i = 0; i < 15; i++) {
+                    for (let j = 0; j < 15; j++) {
+                        const cell = document.createElement('div');
+                        cell.className = 'gobang-cell';
+                        cell.dataset.row = i;
+                        cell.dataset.col = j;
+                        
+                        cell.addEventListener('click', function() {
+                            if (!this.querySelector('.stone')) {
+                                const stone = document.createElement('div');
+                                stone.className = `stone ${currentPlayer}`;
+                                this.appendChild(stone);
+                                
+                                // 记录历史
+                                gameHistory.push({
+                                    row: i,
+                                    col: j,
+                                    player: currentPlayer
+                                });
+                                
+                                // 切换玩家
+                                currentPlayer = currentPlayer === 'black' ? 'white' : 'black';
+                            }
+                        });
+                        
+                        gobangBoard.appendChild(cell);
+                    }
+                }
+            }
+            
+            gobangRestart.addEventListener('click', initGobang);
+            
+            gobangUndo.addEventListener('click', function() {
+                if (gameHistory.length > 0) {
+                    const lastMove = gameHistory.pop();
+                    const cell = document.querySelector(`.gobang-cell[data-row="${lastMove.row}"][data-col="${lastMove.col}"]`);
+                    cell.innerHTML = '';
+                    currentPlayer = lastMove.player;
+                }
+            });
+            
+            initGobang();
+        });
+    </script>
+</body>
+</html>
